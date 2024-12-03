@@ -9,15 +9,13 @@ public class AuthService {
 
     private UserDAO userDAO = new UserDAO();
     private static final String ADMIN_KEY = "admin-key-123";
-    private JwtUtil jwtUtil = new JwtUtil();  // Створюємо об'єкт JwtUtil
+    private JwtUtil jwtUtil = new JwtUtil();  
 
     public void register(User user) throws Exception {
-        // Перевірка, чи користувач уже зареєстрований
         if (userDAO.getUserByEmail(user.getEmail()) != null) {
             throw new Exception("Користувач із таким email вже зареєстрований");
         }
     
-        // Повторна перевірка обов'язкових полів на рівні сервісу
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new Exception("Поле email обов'язкове для заповнення");
         }
@@ -31,7 +29,6 @@ public class AuthService {
             throw new Exception("Поле name обов'язкове для заповнення");
         }
     
-        // Логіка для корпоративних email
         if (isCorporateEmail(user.getEmail())) {
             if (user.getAdminKey() == null || !isValidAdminKey(user.getAdminKey())) {
                 throw new Exception("Для корпоративної пошти необхідно вказати валідний adminKey");
@@ -41,10 +38,8 @@ public class AuthService {
             user.setRole("user");
         }
     
-        // Хешування пароля перед збереженням
         user.setPassword(hashPassword(user.getPassword()));
     
-        // Збереження користувача
         userDAO.createUser(user);
     }
 
@@ -57,18 +52,15 @@ public class AuthService {
             throw new Exception("Поле password обов'язкове для заповнення");
         }
     
-        // Отримання користувача за email
         User user = userDAO.getUserByEmail(email);
         if (user == null) {
             throw new Exception("Користувача не знайдено");
         }
-    
-        // Перевірка пароля
+
         if (!BCrypt.checkpw(password, user.getPassword())) {
             throw new Exception("Невірний пароль");
         }
     
-        // Перевірка adminKey для корпоративних email
         if (isCorporateEmail(email)) {
             if (!isValidAdminKey(adminKey)) {
                 throw new Exception("Невірний adminKey для корпоративної пошти");
@@ -78,8 +70,7 @@ public class AuthService {
                 throw new Exception("adminKey не дозволено для звичайних користувачів");
             }
         }
-    
-        // Генерація токена
+
         String token = jwtUtil.generateToken(user);
         return token;
     }
