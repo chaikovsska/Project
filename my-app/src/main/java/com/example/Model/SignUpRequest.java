@@ -1,12 +1,11 @@
 package com.example.Model;
 
 public class SignUpRequest {
-    private String email; // Пошта клієнта
+    private String email;
     private int trainerId;
     private String date;
     private String time;
 
-    // Геттери та сеттери
     public String getEmail() {
         return email;
     }
