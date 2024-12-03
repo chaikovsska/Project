@@ -17,7 +17,6 @@ public class TrainerScheduleController {
         this.trainerScheduleDAO = new TrainerScheduleDAO();
     }
 
-    // GET: Отримати всі розклади
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTrainerSchedules() {
@@ -29,7 +28,6 @@ public class TrainerScheduleController {
         }
     }
 
-    // POST: Створити новий розклад
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -42,8 +40,6 @@ public class TrainerScheduleController {
         }
     }
 
-
-    // DELETE: Видалити розклад за ID тренера, датою та часом
     @DELETE
     @Path("/{trainerId}/{sessionDate}/{sessionTime}")
     @Produces(MediaType.APPLICATION_JSON)
