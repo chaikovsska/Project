@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 public class PaymentDAO {
 
-    // Оновлений метод для створення платежу з новим полем membership_id
     public boolean createPayment(Payment payment) throws SQLException {
         String query = "INSERT INTO payments (client_id, amount, payment_date, method, membership_id) VALUES (?, ?, ?, ?::payment_method, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -20,7 +19,7 @@ public class PaymentDAO {
             stmt.setDouble(2, payment.getAmount());
             stmt.setDate(3, Date.valueOf(payment.getPaymentDate()));
             stmt.setString(4, payment.getMethod());
-            stmt.setInt(5, payment.getMembershipId());  // додано membership_id
+            stmt.setInt(5, payment.getMembershipId()); 
     
             int affectedRows = stmt.executeUpdate();
             
@@ -36,7 +35,6 @@ public class PaymentDAO {
         }
     }
 
-    // Оновлений метод для отримання платежу за ID
     public Payment getPaymentById(int id) throws SQLException {
         Payment payment = null;
         String query = "SELECT * FROM payments WHERE id = ?";
@@ -51,14 +49,13 @@ public class PaymentDAO {
                     payment.setAmount(rs.getDouble("amount"));
                     payment.setPaymentDate(rs.getString("payment_date"));
                     payment.setMethod(rs.getString("method"));
-                    payment.setMembershipId(rs.getInt("membership_id"));  // Зчитуємо membership_id
+                    payment.setMembershipId(rs.getInt("membership_id")); 
                 }
             }
         }
         return payment;
     }
 
-    // Оновлений метод для отримання платежів за clientId
     public List<Payment> getPaymentsByClientId(int clientId) throws SQLException {
         List<Payment> payments = new ArrayList<>();
         String query = "SELECT * FROM payments WHERE client_id = ?";
@@ -73,7 +70,7 @@ public class PaymentDAO {
                     payment.setAmount(rs.getDouble("amount"));
                     payment.setPaymentDate(rs.getString("payment_date"));
                     payment.setMethod(rs.getString("method"));
-                    payment.setMembershipId(rs.getInt("membership_id"));  // Зчитуємо membership_id
+                    payment.setMembershipId(rs.getInt("membership_id")); 
                     payments.add(payment);
                 }
             }
@@ -81,7 +78,6 @@ public class PaymentDAO {
         return payments;
     }
 
-    // Оновлений метод для оновлення платежу
     public boolean updatePayment(Payment payment) throws SQLException {
         String query = "UPDATE payments SET client_id = ?, amount = ?, payment_date = ?, method = ?::payment_method, membership_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -90,13 +86,12 @@ public class PaymentDAO {
             stmt.setDouble(2, payment.getAmount());
             stmt.setDate(3, Date.valueOf(payment.getPaymentDate()));
             stmt.setString(4, payment.getMethod());
-            stmt.setInt(5, payment.getMembershipId());  // Оновлюємо membership_id
+            stmt.setInt(5, payment.getMembershipId());  
             stmt.setInt(6, payment.getId());
             return stmt.executeUpdate() > 0;
         }
     }
 
-    // Оновлений метод для отримання всіх платежів
     public List<Payment> getAllPayments() throws SQLException {
         List<Payment> payments = new ArrayList<>();
         String query = "SELECT * FROM payments";
@@ -110,14 +105,13 @@ public class PaymentDAO {
                 payment.setAmount(rs.getDouble("amount"));
                 payment.setPaymentDate(rs.getString("payment_date"));
                 payment.setMethod(rs.getString("method"));
-                payment.setMembershipId(rs.getInt("membership_id"));  // Зчитуємо membership_id
+                payment.setMembershipId(rs.getInt("membership_id"));
                 payments.add(payment);
             }
         }
         return payments;
     }
 
-    // Оновлений метод для видалення платежу
     public boolean deletePayment(int id) throws SQLException {
         String query = "DELETE FROM payments WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
