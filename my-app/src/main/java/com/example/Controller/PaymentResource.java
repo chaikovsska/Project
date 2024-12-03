@@ -17,25 +17,21 @@ public class PaymentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response processPayment(Payment payment) {
         try {
-            // Отримуємо користувача за email
             int userId = clientDAO.getUserIdByEmail(payment.getEmail());
             if (userId == 0) {
                 return Response.status(Response.Status.NOT_FOUND).entity("Користувач не знайдений").build();
             }
 
-            // Перевіряємо, чи немає активного абонемента
             boolean hasActiveMembership = clientDAO.hasActiveMembership(userId);
             if (hasActiveMembership) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("У вас вже є активний абонемент").build();
             }
 
-            // Визначення тривалості абонемента та розрахунок дати завершення
             int duration = clientDAO.getMembershipDuration(payment.getMembershipId());
             if (duration <= 0) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Невірний абонемент").build();
             }
 
-            // Створюємо клієнта
             Client newClient = new Client();
             newClient.setUserId(userId);
             newClient.setMembershipId(payment.getMembershipId());
@@ -44,10 +40,9 @@ public class PaymentResource {
 
             int clientId = clientDAO.createClient(newClient);
 
-            // Додаємо платіж
             payment.setClientId(clientId);
             payment.setMethod("online"); // Автоматично встановлюємо метод
-            payment.setAmount(clientDAO.getMembershipPrice(payment.getMembershipId())); // Отримуємо ціну абонемента
+            payment.setAmount(clientDAO.getMembershipPrice(payment.getMembershipId())); 
             clientDAO.addPaymentRecord(payment);
 
             return Response.status(Response.Status.OK).entity("Оплата успішна, абонемент активовано").build();
