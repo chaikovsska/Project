@@ -19,13 +19,10 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(User user) {
         try {
-            // Валідація обов'язкових полів
             validateUser(user);
 
-            // Хешування паролю
             user.setPassword(hashPassword(user.getPassword()));
 
-            // Якщо корпоративна пошта, вимагається adminKey
             if (isCorporateEmail(user.getEmail())) {
                 if (user.getAdminKey() == null || !isValidAdminKey(user.getAdminKey())) {
                     return Response.status(Response.Status.BAD_REQUEST)
@@ -38,7 +35,7 @@ public class UserController {
             }
 
             userDAO.createUser(user);
-            user.setPassword(null); // Видаляємо пароль перед поверненням
+            user.setPassword(null);
             return Response.status(Response.Status.CREATED).entity(user).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -80,7 +77,6 @@ public class UserController {
         try {
             List<User> users = userDAO.getAllUsers();
 
-            // Видаляємо паролі з об'єктів користувачів
             users.forEach(user -> user.setPassword(null));
 
             return Response.ok(users).build();
@@ -99,7 +95,7 @@ public class UserController {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            user.setPassword(null); // Видаляємо пароль перед поверненням
+            user.setPassword(null); 
             return Response.ok(user).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -118,7 +114,7 @@ public class UserController {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            user.setPassword(null); // Видаляємо пароль перед поверненням
+            user.setPassword(null); 
             return Response.ok(user).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
