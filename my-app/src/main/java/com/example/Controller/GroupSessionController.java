@@ -24,8 +24,7 @@ public class GroupSessionController {
     private GroupSessionDAO groupSessionDAO;
     private SessionService sessionService;
     private ClientDAO clientDAO;
-
-    // Конструктор для ініціалізації залежностей
+    
     public GroupSessionController() {
         this.groupSessionDAO = new GroupSessionDAO();
         this.sessionService = new SessionService();
@@ -110,13 +109,12 @@ public class GroupSessionController {
         try {
             // Отримуємо clientId за email
             int clientId = clientDAO.getClientIdByEmail(signUpRequest.getEmail());
-            if (clientId == 0) { // Якщо ID не знайдено
+            if (clientId == 0) { 
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Клієнта з таким email не знайдено.")
                         .build();
             }
 
-            // Отримуємо тип підписки клієнта
             String subscriptionType = sessionService.getSubscriptionTypeForClient(clientId);
             if (!(subscriptionType.contains("Group") || subscriptionType.contains("All Training"))) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -124,7 +122,6 @@ public class GroupSessionController {
                         .build();
             }
 
-            // Отримуємо sessionId на основі дати, часу та trainerId
             int sessionId = getSessionIdByDateTime(signUpRequest.getDate(), signUpRequest.getTime(), signUpRequest.getTrainerId());
             if (sessionId == 0) { // Якщо сесію не знайдено
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -132,7 +129,6 @@ public class GroupSessionController {
                         .build();
             }
 
-            // Перевірка, чи клієнт вже записаний на сесію
             boolean isAlreadySignedUp = sessionService.isClientAlreadySignedUp(clientId, sessionId);
             if (isAlreadySignedUp) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -140,7 +136,6 @@ public class GroupSessionController {
                         .build();
             }
 
-            // Реєстрація клієнта на групову сесію
             boolean success = sessionService.signUpForGroupSession(clientId, sessionId);
             if (success) {
                 return Response.status(Response.Status.CREATED)
@@ -187,10 +182,8 @@ public class GroupSessionController {
     @Produces(MediaType.APPLICATION_JSON)
     public List<GroupSession> getAvailableGroupSessions(@PathParam("clientId") int clientId) {
         try {
-            // Отримуємо доступні сесії на основі типу підписки клієнта
             return sessionService.getAvailableGroupSessions(clientId);
         } catch (SQLException e) {
-            // Викидаємо помилку, якщо не вдалося отримати сесії
             throw new WebApplicationException("Error retrieving available group sessions: " + e.getMessage(), 500);
         }
     }
