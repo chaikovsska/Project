@@ -4,15 +4,13 @@ import java.time.LocalTime;
 
 public class ScheduleTemplate {
 
-    private int id;              // Унікальний ідентифікатор шаблону
-    private int trainerId;       // Ідентифікатор тренера
-    private String dayOfWeek;    // День тижня (наприклад, "Monday")
-    private LocalTime time;      // Час проведення сесії
+    private int id;             
+    private int trainerId;       
+    private String dayOfWeek;  
+    private LocalTime time;      
 
-    // Конструктор без параметрів (потрібний для JAX-RS)
     public ScheduleTemplate() {}
 
-    // Конструктор з усіма параметрами
     public ScheduleTemplate(int id, int trainerId, String dayOfWeek, LocalTime time) {
         this.id = id;
         this.trainerId = trainerId;
@@ -20,7 +18,6 @@ public class ScheduleTemplate {
         this.time = time;
     }
 
-    // Гетери та сетери для всіх полів
     public int getId() {
         return id;
     }
