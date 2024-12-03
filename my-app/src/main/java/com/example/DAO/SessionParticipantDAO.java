@@ -9,7 +9,6 @@ import com.example.Model.SessionParticipant;
 
 public class SessionParticipantDAO {
 
-    // Отримати всіх учасників
     public List<SessionParticipant> getAllParticipants() throws SQLException {
         List<SessionParticipant> participants = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -28,20 +27,18 @@ public class SessionParticipantDAO {
         return participants;
     }
 
-    // Перевірка, чи існує учасник за participant_id
     public boolean checkIfParticipantExists(int participantId) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM session_participants WHERE participant_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, participantId);
                 try (ResultSet rs = stmt.executeQuery()) {
-                    return rs.next();  // Якщо учасник є, повертається true
+                    return rs.next();
                 }
             }
         }
     }
 
-    // Отримати учасників по participant_id
     public List<SessionParticipant> getParticipantsByParticipantId(int participantId) throws SQLException {
         List<SessionParticipant> participants = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -61,19 +58,18 @@ public class SessionParticipantDAO {
         return participants;
     }
 
-     // Видалити учасника по participantId та sessionId
     public boolean removeParticipantFromSession(int participantId, int sessionId) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "DELETE FROM session_participants WHERE participant_id = ? AND session_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, participantId); // participant_id
                 stmt.setInt(2, sessionId); // session_id
-                return stmt.executeUpdate() > 0; // Якщо видалено хоча б один запис, повертається true
+                return stmt.executeUpdate() > 0; 
             }
         }
     }
 
-    // Додати учасника
+
     public boolean addParticipant(SessionParticipant participant) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "INSERT INTO session_participants (session_id, participant_id) VALUES (?, ?)";
