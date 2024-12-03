@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Client {
     private int id;
     private int userId;
-    private int membershipId; // Це поле для зберігання ID підписки
+    private int membershipId; 
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -50,8 +50,7 @@ public class Client {
         this.endDate = endDate;
     }
 
-    // Метод для перевірки активної підписки
     public boolean hasActiveMembership() {
-        return endDate != null && endDate.isAfter(LocalDate.now()); // Порівняння з поточною датою
+        return endDate != null && endDate.isAfter(LocalDate.now()); 
     }
 }
