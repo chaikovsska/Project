@@ -7,7 +7,6 @@ import com.example.DatabaseConnection;
 
 public class ScheduleGenerator {
 
-    // Метод для автоматичного створення групових сесій на наступний тиждень
     public void generateWeeklyGroupSessions() {
         String selectTemplateQuery = "SELECT trainer_id, day_of_week, time FROM schedule_templates";
         String insertGroupSessionQuery = "INSERT INTO group_sessions (trainer_id, date, time, max_participants, participant_count) VALUES (?, ?, ?, 10, 0)";
@@ -26,8 +25,7 @@ public class ScheduleGenerator {
                 LocalTime time = rs.getTime("time").toLocalTime();
                 DayOfWeek targetDay = DayOfWeek.valueOf(dayOfWeek.toUpperCase(Locale.ENGLISH));
                 LocalDate sessionDate = nextWeekStart.with(targetDay);
-    
-                // Вставка групової сесії без перевірки наявності сесії в trainer_schedule
+
                 insertStmt.setInt(1, trainerId);
                 insertStmt.setDate(2, Date.valueOf(sessionDate));
                 insertStmt.setTime(3, Time.valueOf(time));
