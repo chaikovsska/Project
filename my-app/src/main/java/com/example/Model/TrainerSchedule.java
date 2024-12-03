@@ -9,7 +9,6 @@ public class TrainerSchedule {
     private LocalDate sessionDate;
     private LocalTime sessionTime;
 
-    // Геттери та сеттери
     public int getTrainerId() {
         return trainerId;
     }
