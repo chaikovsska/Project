@@ -8,7 +8,6 @@ public class Membership {
     private int duration;
 
     public Membership() {
-        // тут не потрібно нічого додавати, всі значення можна ініціалізувати через сеттери
     }
 
     public int getId() {
@@ -52,6 +51,6 @@ public class Membership {
     }
 
     public String getType() {
-        return this.name; // Тут можна змінити, якщо потрібно, на іншу змінну
+        return this.name; 
     }
 }
