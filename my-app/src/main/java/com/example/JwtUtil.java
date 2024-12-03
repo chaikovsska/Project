@@ -12,7 +12,7 @@ import com.example.Model.User;
 public class JwtUtil {
 
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 86400000; // 1 day in milliseconds
+    private static final long EXPIRATION_TIME = 86400000;
 
     public String generateToken(User user) {
         return Jwts.builder()
