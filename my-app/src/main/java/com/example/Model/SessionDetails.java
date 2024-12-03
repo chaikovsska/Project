@@ -16,7 +16,6 @@ public class SessionDetails {
         this.trainerId = trainerId;
     }
 
-    // Геттери та сеттери
     public String getSessionType() {
         return sessionType;
     }
