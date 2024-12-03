@@ -16,7 +16,7 @@ public class ClientDAO {
     private MembershipDAO membershipDAO;
 
     public ClientDAO() {
-        this.membershipDAO = new MembershipDAO();  // Ініціалізація DAO
+        this.membershipDAO = new MembershipDAO(); 
     }
 
     public List<Client> getAllClients() throws SQLException {
@@ -100,34 +100,27 @@ public class ClientDAO {
                 }
             }
         }
-        return 0; // Якщо користувача не знайдено
+        return 0;
     }
 
     public int getClientIdByEmail(String email) throws SQLException {
-        // Запит для отримання id користувача за email
         String userQuery = "SELECT id FROM users WHERE email = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(userQuery)) {
     
-            // Встановлюємо параметр для запиту
             stmt.setString(1, email);
     
-            // Виконуємо запит на отримання результату
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Отримуємо user_id з таблиці users
                     int userId = rs.getInt("id");
     
-                    // Тепер шукаємо client_id в таблиці clients, де user_id = userId
                     String clientQuery = "SELECT id FROM clients WHERE user_id = ?";
                     try (PreparedStatement clientStmt = conn.prepareStatement(clientQuery)) {
-                        clientStmt.setInt(1, userId);  // Встановлюємо user_id в запит
+                        clientStmt.setInt(1, userId);
     
-                        // Виконуємо запит на отримання client_id
                         try (ResultSet clientRs = clientStmt.executeQuery()) {
                             if (clientRs.next()) {
-                                // Повертаємо client_id
                                 return clientRs.getInt("id");
                             }
                         }
@@ -135,8 +128,7 @@ public class ClientDAO {
                 }
             }
         }
-        
-        return 0;  // Якщо не знайдено користувача або client_id
+        return 0;  
     }
 
     public int createClient(Client client) throws SQLException {
@@ -152,15 +144,15 @@ public class ClientDAO {
                 if (affectedRows > 0) {
                     try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
-                            int generatedId = generatedKeys.getInt(1); // Отримання ID клієнта
+                            int generatedId = generatedKeys.getInt(1);
                             client.setId(generatedId); 
-                            return generatedId; // Повернення згенерованого ID
+                            return generatedId; 
                         }
                     }
                 }
             }
         }
-        return -1; // Якщо створення не вдалося
+        return -1;
     }
 
     public boolean updateClient(Client client) throws SQLException {
@@ -190,13 +182,11 @@ public class ClientDAO {
     }
 
     public boolean hasActiveMembership(int clientId) throws SQLException {
-        // Запит для перевірки активних абонементів за id клієнта
         String query = "SELECT COUNT(*) FROM clients WHERE id = ? AND DATE(end_date) >= CURRENT_DATE";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
-            // Встановлюємо значення параметра для id клієнта
             stmt.setInt(1, clientId);
             
             try (ResultSet rs = stmt.executeQuery()) {
@@ -204,12 +194,10 @@ public class ClientDAO {
                     int count = rs.getInt(1);
                     System.out.println("Active memberships count for client with id " + clientId + ": " + count);
                     
-                    // Повертаємо true, якщо є активний абонемент
                     return count > 0;
                 }
             }
         }
-        // Якщо немає активних абонементів
         return false;
     }
     
@@ -224,7 +212,7 @@ public class ClientDAO {
                 }
             }
         }
-        return 0; // Якщо не знайдено
+        return 0;
     }
 
     public int getMembershipDuration(int membershipId) throws SQLException {
@@ -238,7 +226,7 @@ public class ClientDAO {
                 }
             }
         }
-        return 0; // Якщо тривалість не знайдена
+        return 0; 
     }
 
     public double getMembershipPrice(int membershipId) throws SQLException {
@@ -252,21 +240,19 @@ public class ClientDAO {
                 }
             }
         }
-        return 0.0; // Якщо ціна не знайдена
+        return 0.0; 
     }
 
     public String getMembershipType(Client client) {
         try {
-            // Отримуємо підписку за ID з об'єкта Client
             Membership membership = membershipDAO.getMembershipById(client.getMembershipId());
             return membership != null ? membership.getType() : null;  // Повертаємо тип підписки
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;  // Повертаємо null, якщо виникла помилка
+            return null;  
         }
     }
 
-    
     public void addPaymentRecord(Payment payment) throws SQLException {
         String query = "INSERT INTO payments (client_id, amount, payment_date, method, membership_id) VALUES (?, ?, ?, ?::payment_method, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -291,7 +277,7 @@ public class ClientDAO {
                 return validMemberships.contains(membershipId);
             }
         }
-        return false; // Клієнт не має відповідного membershipId
+        return false;
     }
 
 }
