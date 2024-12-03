@@ -34,15 +34,12 @@ public class GroupSessionDAO {
     public List<GroupSession> getAvailableGroupSessions() throws SQLException {
         List<GroupSession> availableSessions = new ArrayList<>();
         
-        // Підключаємося до бази даних
         try (Connection connection = DatabaseConnection.getConnection()) {
             // SQL-запит для вибору всіх групових сесій
             String query = "SELECT * FROM group_sessions WHERE participant_count < max_participants";
             
-            // Виконуємо запит
             try (PreparedStatement stmt = connection.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
-                // Проходимо через результати запиту
                 while (rs.next()) {
                     GroupSession session = new GroupSession();
                     session.setId(rs.getInt("id"));
@@ -52,7 +49,6 @@ public class GroupSessionDAO {
                     session.setMaxParticipants(rs.getInt("max_participants"));
                     session.setParticipantCount(rs.getInt("participant_count"));
     
-                    // Додаємо сесію до списку доступних
                     availableSessions.add(session);
                 }
             }
