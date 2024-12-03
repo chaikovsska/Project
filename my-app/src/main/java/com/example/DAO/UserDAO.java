@@ -12,7 +12,7 @@ public class UserDAO {
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT id, role, name, surname, email FROM users"; // Не витягуємо поле password
+            String query = "SELECT id, role, name, surname, email FROM users";
             try (PreparedStatement stmt = connection.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -32,7 +32,7 @@ public class UserDAO {
     public User getUserById(int id) throws SQLException {
         User user = null;
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT id, role, name, surname, email FROM users WHERE id = ?"; // Не витягуємо поле password
+            String query = "SELECT id, role, name, surname, email FROM users WHERE id = ?"; 
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, id);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -87,7 +87,6 @@ public class UserDAO {
     }
 
     public boolean createUser(User user) throws SQLException {
-        // Додавання користувача в базу даних
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "INSERT INTO users (role, name, surname, email, password) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
