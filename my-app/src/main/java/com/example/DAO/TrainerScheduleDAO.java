@@ -9,7 +9,6 @@ import java.util.List;
 
 public class TrainerScheduleDAO {
 
-    // Отримати всі розклади
     public List<TrainerSchedule> getAllSchedules() throws SQLException {
         List<TrainerSchedule> schedules = new ArrayList<>();
         String sql = "SELECT * FROM trainer_schedule";
@@ -23,7 +22,6 @@ public class TrainerScheduleDAO {
                 Date sessionDate = rs.getDate("session_date");
                 Time sessionTime = rs.getTime("session_time");
     
-                // Створення об'єкта TrainerSchedule та встановлення значень через сеттери
                 TrainerSchedule schedule = new TrainerSchedule();
                 schedule.setTrainerId(trainerId);
                 schedule.setSessionDate(sessionDate.toLocalDate());
@@ -47,7 +45,6 @@ public class TrainerScheduleDAO {
         }
     }
 
-    // Видалити розклад за тренером, датою та часом
     public boolean deleteSchedule(int trainerId, String sessionDate, String sessionTime) throws SQLException {
         String sql = "DELETE FROM trainer_schedule WHERE trainer_id = ? AND session_date = ? AND session_time = ?";
 
