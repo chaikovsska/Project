@@ -15,7 +15,6 @@ import com.example.Model.SessionDetails;
 
 public class SessionService {
 
-    // Отримання абонемента клієнта з перевіркою на активність
     public Membership getClientMembership(int clientId) throws SQLException {
         String sql = "SELECT m.id, m.name, m.description, m.price, m.duration, cm.expiry_date " +
                     "FROM memberships m " +
@@ -73,26 +72,23 @@ public class SessionService {
             
             if (rs.next()) {
                 int count = rs.getInt(1);
-                return count > 0;  // Якщо більше 0 записів, то клієнт вже записаний
+                return count > 0;  
             }
         }
-        return false;  // Клієнт не записаний на цю сесію
+        return false; 
     }
     
-    // SQL-запит для вставки сесії
     private static final String INSERT_SESSION_QUERY = 
     "INSERT INTO individual_sessions (client_id, trainer_id, date, time) VALUES (?, ?, ?, ?)";
 
     public boolean signUpForIndividualSession(int clientId, int trainerId, LocalDate sessionDate, LocalTime sessionTime) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // Виконання SQL-запиту для створення сесії
             try (PreparedStatement statement = connection.prepareStatement(INSERT_SESSION_QUERY)) {
-                statement.setInt(1, clientId);                     // Записуємо client_id
-                statement.setInt(2, trainerId);                    // Записуємо trainer_id
-                statement.setDate(3, java.sql.Date.valueOf(sessionDate)); // Записуємо sessionDate у форматі SQL Date
-                statement.setTime(4, java.sql.Time.valueOf(sessionTime)); // Записуємо sessionTime у форматі SQL Time
+                statement.setInt(1, clientId);             
+                statement.setInt(2, trainerId);                   
+                statement.setDate(3, java.sql.Date.valueOf(sessionDate));
+                statement.setTime(4, java.sql.Time.valueOf(sessionTime)); 
 
-                // Перевірка кількості змінених рядків, щоб визначити успішність вставки
                 int rowsAffected = statement.executeUpdate();
                 return rowsAffected > 0;
             }
@@ -115,52 +111,46 @@ public class SessionService {
 
                 ResultSet rs = statement.executeQuery();
                 if (rs.next()) {
-                    return rs.getInt(1) > 0; // Якщо результат більший за 0, значить такий запис існує
+                    return rs.getInt(1) > 0;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false; // Якщо сесії не існує
+        return false;
     }
 
-    // Перевірка доступності індивідуальних сесій
     public boolean checkTrainerAvailability(int trainerId, LocalDate date, LocalTime time) throws SQLException {
         String sql = "SELECT 1 FROM individual_sessions WHERE trainer_id = ? AND date = ? AND time = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
-            stmt.setDate(2, Date.valueOf(date));  // Перетворення LocalDate у SQL Date
-            stmt.setTime(3, Time.valueOf(time));  // Перетворення LocalTime у SQL Time
+            stmt.setDate(2, Date.valueOf(date)); 
+            stmt.setTime(3, Time.valueOf(time));  
             ResultSet rs = stmt.executeQuery();
 
-            return !rs.next(); // Якщо сесія існує, вона недоступна
+            return !rs.next();
         }
     }
 
     public List<GroupSession> getAvailableGroupSessions(int clientId) throws SQLException {
-        // Отримуємо тип підписки для клієнта
         String subscriptionType = getSubscriptionTypeForClient(clientId);
     
         List<GroupSession> sessions = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // Перевіряємо тип підписки
             if (subscriptionType.contains("Group") || subscriptionType.contains("All Training")) {
-                // Запит для групових сесій, якщо підписка дозволяє доступ до них
                 String sql = "SELECT id, trainer_id, date, time, max_participants, participant_count " +
                              "FROM group_sessions WHERE date >= CURRENT_DATE";
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
-                        // Якщо сесія заповнена, пропускаємо її
                         int participantCount = rs.getInt("participant_count");
                         int maxParticipants = rs.getInt("max_participants");
                         if (participantCount >= maxParticipants) {
-                            continue; // Пропускаємо сесію, якщо вона заповнена
+                            continue; 
                         }
-                        
-                        // Створюємо об'єкт сесії та додаємо його в список
+
                         GroupSession session = new GroupSession();
                         session.setId(rs.getInt("id"));
                         session.setTrainerId(rs.getInt("trainer_id"));
@@ -177,31 +167,26 @@ public class SessionService {
     }
     
     public List<TrainerSchedule> getAvailableTrainerSchedules(int clientId) throws SQLException {
-        // Отримання типу підписки клієнта
         String subscriptionType = getSubscriptionTypeForClient(clientId);
     
-        // Перевірка, чи тип підписки містить "All Training"
         if (!subscriptionType.contains("All Training")) {
-            return new ArrayList<>(); // Повернути порожній список, якщо тип підписки не підходить
+            return new ArrayList<>(); 
         }
-    
-        // SQL-запит для доступних сесій для поточної дати і майбутніх сесій
+
         String sql = "SELECT trainer_id, session_date, session_time " +
                      "FROM trainer_schedule " +
-                     "WHERE session_date >= CURRENT_DATE";  // Змінили на >= CURRENT_DATE для доступних майбутніх сесій
+                     "WHERE session_date >= CURRENT_DATE";  
     
         List<TrainerSchedule> schedules = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                // Створення об'єкта TrainerSchedule без конструктора
                 TrainerSchedule schedule = new TrainerSchedule();
                 schedule.setTrainerId(rs.getInt("trainer_id"));
                 schedule.setSessionDate(rs.getDate("session_date").toLocalDate());
                 schedule.setSessionTime(rs.getTime("session_time").toLocalTime());
     
-                // Перевірка на порожні або некоректні значення
                 if (schedule.getTrainerId() != 0 && schedule.getSessionDate() != null && schedule.getSessionTime() != null) {
                     schedules.add(schedule);
                 }
@@ -231,7 +216,7 @@ public class SessionService {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
-            stmt.setDate(2, Date.valueOf(date));  // Перетворення LocalDate в SQL Date
+            stmt.setDate(2, Date.valueOf(date)); 
             ResultSet rs = stmt.executeQuery();
     
             while (rs.next()) {
@@ -252,21 +237,19 @@ public class SessionService {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
-            stmt.setDate(2, Date.valueOf(date));  // Перетворення LocalDate в SQL Date
-            stmt.setTime(3, Time.valueOf(time));  // Перетворення LocalTime в SQL Time
+            stmt.setDate(2, Date.valueOf(date));  
+            stmt.setTime(3, Time.valueOf(time)); 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         }
     }
 
     public boolean cancelGroupSession(int clientId, int sessionId) throws SQLException {
-        // Отримуємо тип підписки для клієнта
         String subscriptionType = getSubscriptionTypeForClient(clientId);
         if (!(subscriptionType.contains("Group") || subscriptionType.contains("All Training"))) {
             throw new SQLException("Your membership does not include group or all training sessions.");
         }
     
-        // Перевірка наявності запису на сесію
         try (Connection connection = DatabaseConnection.getConnection()) {
             String checkSql = "SELECT * FROM session_participants WHERE session_id = ? AND participant_id = ?";
             try (PreparedStatement checkStmt = connection.prepareStatement(checkSql)) {
@@ -279,15 +262,12 @@ public class SessionService {
                 }
             }
     
-            // Видалення запису
             String deleteSql = "DELETE FROM session_participants WHERE session_id = ? AND participant_id = ?";
             try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
                 deleteStmt.setInt(1, sessionId);
                 deleteStmt.setInt(2, clientId);
                 int rowsDeleted = deleteStmt.executeUpdate();
-    
-                // Тепер, замість оновлення кількості учасників вручну, цей блок видалений
-                // Оновлення кількості учасників відбуватиметься автоматично через тригер
+                
                 if (rowsDeleted > 0) {
                     return true;
                 }
@@ -302,7 +282,6 @@ public class SessionService {
             throw new SQLException("Your membership does not include individual sessions.");
         }
     
-        // Перевірка наявності запису на сесію
         try (Connection connection = DatabaseConnection.getConnection()) {
             String checkSql = "SELECT * FROM individual_sessions WHERE id = ? AND client_id = ?";
             try (PreparedStatement checkStmt = connection.prepareStatement(checkSql)) {
@@ -315,7 +294,6 @@ public class SessionService {
                 }
             }
     
-            // Видалення запису
             String deleteSql = "DELETE FROM individual_sessions WHERE id = ? AND client_id = ?";
             try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
                 deleteStmt.setInt(1, sessionId);
@@ -343,13 +321,13 @@ public class SessionService {
 
                 ResultSet rs = statement.executeQuery();
                 if (rs.next()) {
-                    return rs.getInt("id");  // Повертаємо id сесії, якщо вона знайдена
+                    return rs.getInt("id"); 
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1;  // Якщо сесія не знайдена, повертаємо -1
+        return -1;
     }
 
     public boolean deleteSession(int sessionId) throws SQLException {
@@ -358,7 +336,7 @@ public class SessionService {
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, sessionId);
                 int rowsDeleted = stmt.executeUpdate();
-                return rowsDeleted > 0;  // Якщо рядки були видалені, повертаємо true
+                return rowsDeleted > 0;  
             }
         }
     }
@@ -378,8 +356,7 @@ public class SessionService {
     
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
-            // Встановлюємо параметри запиту (ID клієнта)
+
             stmt.setInt(1, clientId);
             stmt.setInt(2, clientId);
     
