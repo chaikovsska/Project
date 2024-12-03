@@ -3,13 +3,12 @@ package com.example.Model;
 public class Payment {
     private int id;
     private int clientId;
-    private String email; // Замість userId
+    private String email; 
     private double amount;
     private String paymentDate;
     private String method;
     private int membershipId;
 
-    // Геттери та сеттери
     public int getId() {
         return id;
     }
