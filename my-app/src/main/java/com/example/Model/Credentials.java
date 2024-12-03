@@ -3,7 +3,7 @@ package com.example.Model;
 public class Credentials {
     private String email;
     private String password;
-    private String adminKey; // Додано adminKey
+    private String adminKey; 
 
     public String getEmail() {
         return email;
