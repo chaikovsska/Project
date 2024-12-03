@@ -13,7 +13,6 @@ import com.example.DatabaseConnection;
 @Path("/schedule-templates")
 public class ScheduleTemplateController {
 
-    // CREATE: Додати новий шаблон
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -31,7 +30,6 @@ public class ScheduleTemplateController {
         }
     }
 
-    // READ: Отримати всі шаблони
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTemplates() {
@@ -55,7 +53,6 @@ public class ScheduleTemplateController {
         }
     }
 
-    // UPDATE: Оновити шаблон
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -79,7 +76,6 @@ public class ScheduleTemplateController {
         }
     }
 
-    // DELETE: Видалити шаблон
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
