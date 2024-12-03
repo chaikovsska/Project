@@ -1,12 +1,11 @@
 package com.example.Model;
 
 public class DeleteSessionRequest {
-    private String email;       // Електронна пошта користувача
-    private int trainerId;      // ID тренера
-    private String date;        // Дата сесії у вигляді String (формат YYYY-MM-DD)
-    private String time;        // Час сесії у вигляді String (формат HH:mm)
+    private String email;   
+    private int trainerId;      
+    private String date;        
+    private String time;        
 
-    // Getter та Setter для кожного поля
     public String getEmail() {
         return email;
     }
