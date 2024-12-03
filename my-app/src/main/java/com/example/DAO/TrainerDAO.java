@@ -120,7 +120,6 @@ public class TrainerDAO {
             return sessions;
         }
     } else {
-        // Якщо дата не вказана, шукаємо всі заняття для тренера
         String sql = "SELECT * FROM trainer_schedule WHERE trainer_id = ? AND session_time >= CURRENT_TIME";
         
         try (Connection connection = DatabaseConnection.getConnection();
