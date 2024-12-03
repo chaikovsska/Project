@@ -13,7 +13,6 @@ public class PaymentController {
 
     private PaymentDAO paymentDAO = new PaymentDAO();
 
-    // Отримати всі платежі
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPayments() {
@@ -25,7 +24,6 @@ public class PaymentController {
         }
     }
 
-    // Отримати оплату за id
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +39,6 @@ public class PaymentController {
         }
     }
 
-    // Отримати оплату за clientId
     @GET
     @Path("/client/{clientId}")
     @Produces(MediaType.APPLICATION_JSON)
