@@ -103,10 +103,8 @@ public class IndividualSessionController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAvailableSessionsForClient(@PathParam("clientId") int clientId) {
         try {
-            // Отримуємо доступні тренувальні сесії через sessionService
             List<TrainerSchedule> trainerSchedules = sessionService.getAvailableTrainerSchedules(clientId);
 
-            // Повертаємо доступні сесії
             return Response.ok(trainerSchedules).build();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,15 +120,13 @@ public class IndividualSessionController {
         try {
             ClientDAO clientDAO = new ClientDAO();
 
-            // Отримуємо clientId за email
             int clientId = clientDAO.getClientIdByEmail(signUpRequest.getEmail());
-            if (clientId == 0) { // Якщо ID не знайдено
+            if (clientId == 0) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Client with the given email does not exist.")
                         .build();
             }
 
-            // Перевірка наявності активного абонемента
             boolean hasMembership = clientDAO.hasActiveMembership(clientId);
             if (!hasMembership) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -138,7 +134,6 @@ public class IndividualSessionController {
                         .build();
             }
 
-            // Перевірка, чи клієнт вже записаний на сесію
             boolean isAlreadySignedUp = sessionService.isClientAlreadySignedUp(
                     clientId,
                     signUpRequest.getTrainerId(),
@@ -152,7 +147,6 @@ public class IndividualSessionController {
                         .build();
             }
 
-            // Реєстрація клієнта на сесію
             boolean success = sessionService.signUpForIndividualSession(
                     clientId,
                     signUpRequest.getTrainerId(),
@@ -161,7 +155,6 @@ public class IndividualSessionController {
             );
 
             if (success) {
-                // Видалення сесії з trainer_schedule після реєстрації
                 boolean sessionRemoved = sessionService.removeSessionFromTrainerSchedule(
                         signUpRequest.getTrainerId(),
                         LocalDate.parse(signUpRequest.getDate()),
@@ -209,12 +202,11 @@ public class IndividualSessionController {
                             .build();
             }
 
-            // Знаходимо ID сесії на основі переданих параметрів
             int sessionId = sessionService.getSessionId(
                 clientId,
                 deleteSessionRequest.getTrainerId(),
-                LocalDate.parse(deleteSessionRequest.getDate()),  // Перетворення String -> LocalDate
-                LocalTime.parse(deleteSessionRequest.getTime())   // Перетворення String -> LocalTime
+                LocalDate.parse(deleteSessionRequest.getDate()), 
+                LocalTime.parse(deleteSessionRequest.getTime())   
             );
 
             if (sessionId == -1) {
@@ -223,7 +215,6 @@ public class IndividualSessionController {
                             .build();
             }
 
-            // Видаляємо сесію за її ID
             boolean success = sessionService.deleteSession(sessionId);
 
             if (success) {
