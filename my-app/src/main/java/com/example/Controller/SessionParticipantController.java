@@ -16,8 +16,7 @@ public class SessionParticipantController {
     public SessionParticipantController() {
         this.participantDAO = new SessionParticipantDAO();
     }
-
-    // Отримати всіх учасників
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllParticipants() {
@@ -63,14 +62,12 @@ public class SessionParticipantController {
         }
     }
 
-    // Метод DELETE для видалення учасника по participantId та sessionId
     @DELETE
     @Path("/{participantId}/{sessionId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeParticipantFromSession(@PathParam("participantId") int participantId,
                                                  @PathParam("sessionId") int sessionId) {
         try {
-            // Видаляємо учасника з конкретної сесії
             boolean removed = participantDAO.removeParticipantFromSession(participantId, sessionId);
             if (removed) {
                 return Response.status(Response.Status.NO_CONTENT).build();
